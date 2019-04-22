@@ -2,7 +2,9 @@
 	"name": "tslproducts-umd",
 	"version": "1.0.0",
 	"api_version": "1.0.0",
-	"keywords": [ "protocol" ],
+	"keywords": [
+		"Protocol"
+	],
 	"manufacturer": "TSL Products",
 	"product": "UMD protocol",
 	"shortname": "tsl-umd",

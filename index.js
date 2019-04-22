@@ -83,6 +83,7 @@ instance.prototype.config_fields = function () {
 				type: 'textinput',
 				id: 'port',
 				label: 'Target port',
+				default: '40001',
 				width: 6
 			},
 			{
@@ -90,7 +91,8 @@ instance.prototype.config_fields = function () {
 				id: 'version',
 				label: 'Version of Protocol',
 				choices: self.CHOICES_VERSIONS,
-				default: '3'
+				default: '3',
+				width: 6
 			}
 		]
 };
@@ -116,13 +118,13 @@ instance.prototype.actions = function (system) {
 				label: 'Tally number',
 				id: 'tallyNumber',
 				default: '1',
-				choices: [{ label: 1, id: 1},{ label: 2, id: 2}]
+				choices: [{ label: '1', id: '1'},{ label: '2', id: '2'}]
 			},{
 				type: 'dropdown',
 				label: 'Tally color',
 				id: 'color',
 				default: 'red',
-				choices: [{ label: red, id: red},{ label: green, id: green}]
+				choices: [{ label: 'red', id: 'red'},{ label: 'green', id: 'green'}]
 			} ]
 		}
 	};
@@ -139,8 +141,8 @@ instance.prototype.action = function (action) {
 		switch (id) {
 
 			case 'tally':
-				cmd = 'do some stuff' ;
-			break;
+				cmd = new Buffer([0x80,0x23,0x43,0x61,0x6d,0x20,0x33,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x1b,0x02,0x19,0x00]);
+				break;
 
 		}
 
