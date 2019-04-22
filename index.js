@@ -115,8 +115,8 @@ instance.prototype.actions = function (system) {
 			label: 'Select Tally and color',
 			options: [ {
 				type: 'textinput',
-				label: 'Tally id',
-				id: 'id',
+				label: 'Tally address',
+				id: 'address',
 				default: '0',
 				regex: self.REGEX_NUMBER
 			},{
@@ -130,7 +130,12 @@ instance.prototype.actions = function (system) {
 				label: 'Tally color',
 				id: 'color',
 				default: 'red',
-				choices: [{ label: 'red', id: 'red'},{ label: 'green', id: 'green'}]
+				choices: [{ label: 'red', id: 'red'},{ label: 'green', id: 'green'},{ label: 'off', id: 'off'}]
+			},{
+				type: 'textinput',
+				label: 'UMD message',
+				id: 'message',
+				default: 'CAM 1'
 			} ]
 		}
 	};
@@ -144,19 +149,65 @@ instance.prototype.action = function (action) {
 		var cmd;
 		var opt = action.options;
 
+		// Build array of sending bytes
+		var uint8 = new Uint8Array(22);
+		uint8[0] =  0x80 + parseInt(opt.address, 16) - 0x01; //Address + 0x80
+		uint8[1] = 0x03; //Tally Information V3.0
+		uint8[2] = 0x20; //start of 16 bytes message for UMD
+		uint8[3] = 0x20;
+		uint8[4] = 0x20;
+		uint8[5] = 0x20;
+		uint8[6] = 0x20;
+		uint8[7] = 0x20;
+		uint8[8] = 0x20;
+		uint8[9] = 0x20;
+		uint8[10] = 0x20;
+		uint8[11] = 0x20;
+		uint8[12] = 0x20;
+		uint8[13] = 0x20;
+		uint8[14] = 0x20;
+		uint8[15] = 0x20;
+		uint8[16] = 0x20;
+		uint8[17] = 0x20; //Last part of message
+		uint8[18] = 0x23; //CHECKSUM
+		uint8[19] = 0x27; //CHECKSUM
+		uint8[20] = 0x01; //Byte count of XDATA & Version
+		uint8[21] = 0x11; //XDATA
+
+		// Put UMD Text in, max 16 characters
+		function message_to_hexa(message) {
+			for (var n = 0; n < 15; n ++) {
+				//[code & 0xff, code / 256 >>> 0]
+				if (n < message.length) {
+					uint8[n+2] = message.charCodeAt(n);
+				} else {
+					uint8[n+2] = 0x20;
+				}
+			}
+		}
+
+		if(opt.message !== undefined) {
+			message_to_hexa(opt.message);
+		}
+
 		switch (id) {
 
 			case 'tally':
 				if (opt.tallySide == 'left' && opt.color == 'red') {
-					var b = new Buffer([0x80,0x03,0x43,0x61,0x6d,0x20,0x32,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x23,0x27,0x01,0x11]);
-					console.log(b[3]);
-					cmd = b;
+					uint8[20] = 0x01;
+					cmd = uint8;
 				} else if ( opt.tallySide == 'right' && opt.color == 'red') {
-					cmd = new Buffer([0x80,0x03,0x43,0x61,0x6d,0x20,0x32,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x23,0x27,0x10,0x11]);
+					uint8[20] = 0x10;
+					cmd = uint8;
 				} else if ( opt.tallySide == 'left' && opt.color == 'green') {
-					cmd = new Buffer([0x80,0x03,0x43,0x61,0x6d,0x20,0x32,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x23,0x27,0x02,0x11]);
+					uint8[20] = 0x02;
+					cmd = uint8;
 				} else if ( opt.tallySide == 'right' && opt.color == 'green') {
-					cmd = new Buffer([0x80,0x03,0x43,0x61,0x6d,0x20,0x32,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x23,0x27,0x20,0x11]);
+					uint8[20] = 0x20;
+					cmd = uint8;
+				} else if (opt.color == 'off') {
+					uint8[20] = 0x00;
+					cmd = uint8;
 				}
 
 				break;
