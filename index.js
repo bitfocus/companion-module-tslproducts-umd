@@ -57,8 +57,8 @@ instance.prototype.updateConfig = function (config) {
 
 instance.prototype.CHOICES_VERSIONS = [
 	{ label: 'v3.1', id: '3' },
-	{ label: 'v4.0', id: '4' },
-	{ label: 'v5.0', id: '5' }
+	{ label: 'v4.0', id: '4' }/*,
+	{ label: 'v5.0', id: '5' }*/
 ];
 
 // Return config fields for web config
@@ -130,7 +130,7 @@ instance.prototype.actions = function (system) {
 				label: 'Tally color',
 				id: 'color',
 				default: 'red',
-				choices: [{ label: 'red', id: 'red'},{ label: 'green', id: 'green'},{ label: 'off', id: 'off'}]
+				choices: [{ label: 'red', id: 'red'},{ label: 'green', id: 'green'},{ label: 'amber', id: 'amber'},{ label: 'off', id: 'off'}]
 			},{
 				type: 'textinput',
 				label: 'UMD message',
@@ -148,66 +148,59 @@ instance.prototype.action = function (action) {
 		var id = action.action;
 		var cmd;
 		var opt = action.options;
-
-		// Build array of sending bytes
-		var uint8 = new Uint8Array(22);
-		uint8[0] =  0x80 + parseInt(opt.address, 16) - 0x01; //Address + 0x80
-		uint8[1] = 0x03; //Tally Information V3.0
-		uint8[2] = 0x20; //start of 16 bytes message for UMD
-		uint8[3] = 0x20;
-		uint8[4] = 0x20;
-		uint8[5] = 0x20;
-		uint8[6] = 0x20;
-		uint8[7] = 0x20;
-		uint8[8] = 0x20;
-		uint8[9] = 0x20;
-		uint8[10] = 0x20;
-		uint8[11] = 0x20;
-		uint8[12] = 0x20;
-		uint8[13] = 0x20;
-		uint8[14] = 0x20;
-		uint8[15] = 0x20;
-		uint8[16] = 0x20;
-		uint8[17] = 0x20; //Last part of message
-		uint8[18] = 0x23; //CHECKSUM
-		uint8[19] = 0x27; //CHECKSUM
-		uint8[20] = 0x01; //Byte count of XDATA & Version
-		uint8[21] = 0x11; //XDATA
-
-		// Put UMD Text in, max 16 characters
-		function message_to_hexa(message) {
-			for (var n = 0; n < 15; n ++) {
-				//[code & 0xff, code / 256 >>> 0]
-				if (n < message.length) {
-					uint8[n+2] = message.charCodeAt(n);
-				} else {
-					uint8[n+2] = 0x20;
-				}
-			}
-		}
-
-		if(opt.message !== undefined) {
-			message_to_hexa(opt.message);
-		}
+		var bufAddress = Buffer.from([0x80 + parseInt(opt.address, 16) - 0x01]);//Address + 0x80
+		var bufTally = Buffer.alloc(1);
+		var bufUMD = Buffer.alloc(16);
+		var bufVBC = Buffer.from([0x02]);
+		var bufXDATAend = Buffer.from([0x11])
 
 		switch (id) {
 
 			case 'tally':
+				//set tally light
 				if (opt.tallySide == 'left' && opt.color == 'red') {
-					uint8[20] = 0x01;
-					cmd = uint8;
+					bufTally = Buffer.from([0x01]);
 				} else if ( opt.tallySide == 'right' && opt.color == 'red') {
-					uint8[20] = 0x10;
-					cmd = uint8;
+					bufTally = Buffer.from([0x10]);
 				} else if ( opt.tallySide == 'left' && opt.color == 'green') {
-					uint8[20] = 0x02;
-					cmd = uint8;
+					bufTally = Buffer.from([0x02]);
 				} else if ( opt.tallySide == 'right' && opt.color == 'green') {
-					uint8[20] = 0x20;
-					cmd = uint8;
-				} else if (opt.color == 'off') {
-					uint8[20] = 0x00;
-					cmd = uint8;
+					bufTally = Buffer.from([0x20]);
+				} else if ( opt.tallySide == 'left' && opt.color == 'amber') {
+					bufTally = Buffer.from([0x03]);
+				} else if ( opt.tallySide == 'right' && opt.color == 'amber') {
+					bufTally = Buffer.from([0x30]);
+				} else {
+					bufTally = Buffer.from([0x00]);
+				}
+
+				// Put UMD message and fill up characters
+				var arrayUMD = new Uint8Array(16);
+				try {
+					var length = opt.message.length;
+					console.log('UMD text length: ', length);
+					for (var n = 0; n < 15; n ++) {
+						if (n < length) {
+							arrayUMD[n] = opt.message.charCodeAt(n);
+						} else {
+							arrayUMD[n] = 0x20; // no more characters so fill up with 0x20
+						}
+					}
+				} catch (e) {
+					console.log('no UMD message');
+					for (var n = 0; n < 15; n ++) {
+						arrayUMD[n] = 0x20;
+					}
+				}
+				//var bufChecksum = Buffer.from([0x23]); //calculate and % 128 !
+				var bufChecksum = Buffer.from([(bufAddress + bufTally + arrayUMD) % 128]);
+				var bufXDATA = Buffer.concat([bufTally, bufXDATAend]);
+				if (self.config.version == '5') {
+					// ToDo
+				} else if (self.config.version == '4') {
+					cmd = Buffer.concat([bufAddress, bufTally, arrayUMD, bufChecksum, bufVBC, bufXDATA]);
+				} else { //Standard version 3.0
+					cmd = Buffer.concat([bufAddress, bufTally, arrayUMD]);
 				}
 
 				break;
