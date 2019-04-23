@@ -85,14 +85,6 @@ instance.prototype.config_fields = function () {
 				label: 'Target port',
 				default: '40001',
 				width: 6
-			},
-			{
-				type: 'dropdown',
-				id: 'version',
-				label: 'Version of Protocol',
-				choices: self.CHOICES_VERSIONS,
-				default: '3',
-				width: 6
 			}
 		]
 };
@@ -111,8 +103,8 @@ instance.prototype.actions = function (system) {
 	var self = this;
 
 	var actions = {
-		'tally': {
-			label: 'Select Tally and color',
+		'tallyV4': {
+			label: 'TSL version 4',
 			options: [ {
 				type: 'textinput',
 				label: 'Tally address',
@@ -121,7 +113,7 @@ instance.prototype.actions = function (system) {
 				regex: self.REGEX_NUMBER
 			},{
 				type: 'dropdown',
-				label: 'Tally number',
+				label: 'Tally left/right',
 				id: 'tallySide',
 				default: 'left',
 				choices: [{ label: 'Left', id: 'left'},{ label: 'Right', id: 'right'}]
@@ -131,6 +123,27 @@ instance.prototype.actions = function (system) {
 				id: 'color',
 				default: 'red',
 				choices: [{ label: 'red', id: 'red'},{ label: 'green', id: 'green'},{ label: 'amber', id: 'amber'},{ label: 'off', id: 'off'}]
+			},{
+				type: 'textinput',
+				label: 'UMD message',
+				id: 'message',
+				default: 'CAM 1'
+			} ]
+		},
+		'tallyV3': {
+			label: 'TSL version 3',
+			options: [ {
+				type: 'textinput',
+				label: 'Tally address',
+				id: 'address',
+				default: '0',
+				regex: self.REGEX_NUMBER
+			},{
+				type: 'dropdown',
+				label: 'Tally number',
+				id: 'tallyNumber',
+				default: '1',
+				choices: [{ label: '1', id: '1'},{ label: '2', id: '2'},{ label: '3', id: '3'},{ label: '4', id: '4'},{ label: 'off', id: 'off'}]
 			},{
 				type: 'textinput',
 				label: 'UMD message',
@@ -156,8 +169,7 @@ instance.prototype.action = function (action) {
 
 		switch (id) {
 
-			case 'tally':
-				//set tally light
+			case 'tallyV4':
 				if (opt.tallySide == 'left' && opt.color == 'red') {
 					bufTally = Buffer.from([0x01]);
 				} else if ( opt.tallySide == 'right' && opt.color == 'red') {
@@ -174,11 +186,10 @@ instance.prototype.action = function (action) {
 					bufTally = Buffer.from([0x00]);
 				}
 
-				// Put UMD message and fill up characters
+				// Put UMD message and fill up characters to 16bytes
 				var arrayUMD = new Uint8Array(16);
 				try {
 					var length = opt.message.length;
-					console.log('UMD text length: ', length);
 					for (var n = 0; n < 15; n ++) {
 						if (n < length) {
 							arrayUMD[n] = opt.message.charCodeAt(n);
@@ -192,16 +203,63 @@ instance.prototype.action = function (action) {
 						arrayUMD[n] = 0x20;
 					}
 				}
-				//var bufChecksum = Buffer.from([0x23]); //calculate and % 128 !
+				//set tally light for version 4.0
+				if (opt.tallySide == 'left' && opt.color == 'red') {
+					bufTally = Buffer.from([0x01]);
+				} else if ( opt.tallySide == 'right' && opt.color == 'red') {
+					bufTally = Buffer.from([0x10]);
+				} else if ( opt.tallySide == 'left' && opt.color == 'green') {
+					bufTally = Buffer.from([0x02]);
+				} else if ( opt.tallySide == 'right' && opt.color == 'green') {
+					bufTally = Buffer.from([0x20]);
+				} else if ( opt.tallySide == 'left' && opt.color == 'amber') {
+					bufTally = Buffer.from([0x03]);
+				} else if ( opt.tallySide == 'right' && opt.color == 'amber') {
+					bufTally = Buffer.from([0x30]);
+				} else {
+					bufTally = Buffer.from([0x00]);
+				}
+
 				var bufChecksum = Buffer.from([(bufAddress + bufTally + arrayUMD) % 128]);
 				var bufXDATA = Buffer.concat([bufTally, bufXDATAend]);
-				if (self.config.version == '5') {
-					// ToDo
-				} else if (self.config.version == '4') {
-					cmd = Buffer.concat([bufAddress, bufTally, arrayUMD, bufChecksum, bufVBC, bufXDATA]);
-				} else { //Standard version 3.0
-					cmd = Buffer.concat([bufAddress, bufTally, arrayUMD]);
+
+				cmd = Buffer.concat([bufAddress, bufTally, arrayUMD, bufChecksum, bufVBC, bufXDATA]);
+
+				break;
+
+			case 'tallyV3':
+				//set tally light for version 3.1
+				if (opt.tallyNumber == '1') {
+					bufTally = Buffer.from([0x31]);
+				} else if (opt.tallyNumber == '2') {
+					bufTally = Buffer.from([0x32]);
+				} else if (opt.tallyNumber == '3') {
+					bufTally = Buffer.from([0x34]);
+				} else if ( opt.tallyNumber == '4') {
+					bufTally = Buffer.from([0x38]);
+				} else {
+					bufTally = Buffer.from([0x30]);
 				}
+
+				// Put UMD message and fill up characters to 16bytes
+				var arrayUMD = new Uint8Array(16);
+				try {
+					var length = opt.message.length;
+					for (var n = 0; n < 15; n ++) {
+						if (n < length) {
+							arrayUMD[n] = opt.message.charCodeAt(n);
+						} else {
+							arrayUMD[n] = 0x20; // no more characters so fill up with 0x20
+						}
+					}
+				} catch (e) {
+					console.log('no UMD message');
+					for (var n = 0; n < 15; n ++) {
+						arrayUMD[n] = 0x20;
+					}
+				}
+
+				cmd = Buffer.concat([bufAddress, bufTally, arrayUMD]);
 
 				break;
 
