@@ -161,7 +161,7 @@ instance.prototype.action = function (action) {
 		var id = action.action;
 		var cmd;
 		var opt = action.options;
-		var bufAddress = Buffer.from([0x80 + parseInt(opt.address, 16) - 0x01]);//Address + 0x80
+		var bufAddress = Buffer.from([0x80 + parseInt(opt.address, 16)]);//Address + 0x80
 		var bufTally = Buffer.alloc(1);
 		var bufUMD = Buffer.alloc(16);
 		var bufVBC = Buffer.from([0x02]);
