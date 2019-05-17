@@ -249,13 +249,13 @@ instance.prototype.action = function (action) {
 						if (n < length) {
 							arrayUMD[n] = opt.message.charCodeAt(n);
 						} else {
-							arrayUMD[n] = 0x20; // no more characters so fill up with 0x20
+							arrayUMD[n] = 0x00; // no more characters so fill up with 0x20
 						}
 					}
 				} catch (e) {
 					console.log('no UMD message');
 					for (var n = 0; n < 15; n ++) {
-						arrayUMD[n] = 0x20;
+						arrayUMD[n] = 0x00;
 					}
 				}
 
