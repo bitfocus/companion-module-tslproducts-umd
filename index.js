@@ -236,7 +236,7 @@ instance.prototype.action = function (action) {
 
 				// Put UMD message and fill up characters to 16bytes
 				var bufUMD = new Buffer(16);
-				bufUMD.fill(0x20); // pad with spaces
+				bufUMD.fill(0x0); // ignore spec and pad with 0 for better aligning on Decimator etc
 				bufUMD.write(opt.message, 0);
 
 				cmd = Buffer.concat([bufAddress, bufTally, bufUMD]);
