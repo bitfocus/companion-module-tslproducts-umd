@@ -170,6 +170,8 @@ instance.prototype.action = function (action) {
 		switch (id) {
 
 			case 'tallyV4':
+				// TODO: fix, the first part of 4.0 is a normal 3.1 tally section,
+				// the following is incorrect:
 				if (opt.tallySide == 'left' && opt.color == 'red') {
 					bufTally = Buffer.from([0x01]);
 				} else if ( opt.tallySide == 'right' && opt.color == 'red') {
@@ -187,22 +189,10 @@ instance.prototype.action = function (action) {
 				}
 
 				// Put UMD message and fill up characters to 16bytes
-				var arrayUMD = new Uint8Array(16);
-				try {
-					var length = opt.message.length;
-					for (var n = 0; n < 15; n ++) {
-						if (n < length) {
-							arrayUMD[n] = opt.message.charCodeAt(n);
-						} else {
-							arrayUMD[n] = 0x20; // no more characters so fill up with 0x20
-						}
-					}
-				} catch (e) {
-					console.log('no UMD message');
-					for (var n = 0; n < 15; n ++) {
-						arrayUMD[n] = 0x20;
-					}
-				}
+				var bufUMD = new Buffer(16);
+				bufUMD.fill(0x20); // pad with spaces
+				bufUMD.write(opt.message, 0);
+
 				//set tally light for version 4.0
 				if (opt.tallySide == 'left' && opt.color == 'red') {
 					bufTally = Buffer.from([0x01]);
@@ -220,7 +210,10 @@ instance.prototype.action = function (action) {
 					bufTally = Buffer.from([0x00]);
 				}
 
-				var bufChecksum = Buffer.from([(bufAddress + bufTally + arrayUMD) % 128]);
+				// This is not really generating a checksum
+				// TODO: sum all data % 128 (using a for loop)
+				var bufChecksum = Buffer.from([(bufAddress + bufTally + bufUMD) % 128]);
+	
 				var bufXDATA = Buffer.concat([bufTally, bufXDATAend]);
 
 				cmd = Buffer.concat([bufAddress, bufTally, arrayUMD, bufChecksum, bufVBC, bufXDATA]);
@@ -242,24 +235,11 @@ instance.prototype.action = function (action) {
 				}
 
 				// Put UMD message and fill up characters to 16bytes
-				var arrayUMD = new Uint8Array(16);
-				try {
-					var length = opt.message.length;
-					for (var n = 0; n < 15; n ++) {
-						if (n < length) {
-							arrayUMD[n] = opt.message.charCodeAt(n);
-						} else {
-							arrayUMD[n] = 0x20; // no more characters so fill up with 0x20
-						}
-					}
-				} catch (e) {
-					console.log('no UMD message');
-					for (var n = 0; n < 15; n ++) {
-						arrayUMD[n] = 0x20;
-					}
-				}
+				var bufUMD = new Buffer(16);
+				bufUMD.fill(0x20); // pad with spaces
+				bufUMD.write(opt.message, 0);
 
-				cmd = Buffer.concat([bufAddress, bufTally, arrayUMD]);
+				cmd = Buffer.concat([bufAddress, bufTally, bufUMD]);
 
 				break;
 
