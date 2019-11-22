@@ -55,12 +55,6 @@ instance.prototype.updateConfig = function (config) {
 	}
 };
 
-// instance.prototype.CHOICES_VERSIONS = [
-// 	{ label: 'v3.1', id: '3' },
-// 	{ label: 'v4.0', id: '4' }/*,
-// 	{ label: 'v5.0', id: '5' }*/
-// ];
-
 // Return config fields for web config
 instance.prototype.config_fields = function () {
 	var self = this;
@@ -156,33 +150,7 @@ instance.prototype.actions = function (system) {
 				default: 'CAM 1'
 			}]
 		},
-		// 'tallyV4': {
-		// 	label: 'TSL V4',
-		// 	options: [{
-		// 		type: 'textinput',
-		// 		label: 'Tally address',
-		// 		id: 'address',
-		// 		default: '0',
-		// 		regex: self.REGEX_NUMBER
-		// 	}, {
-		// 		type: 'dropdown',
-		// 		label: 'Tally left/right',
-		// 		id: 'tallySide',
-		// 		default: 'left',
-		// 		choices: [{ label: 'Left', id: 'left' }, { label: 'Right', id: 'right' }]
-		// 	}, {
-		// 		type: 'dropdown',
-		// 		label: 'Tally color',
-		// 		id: 'color',
-		// 		default: 'red',
-		// 		choices: [{ label: 'red', id: 'red' }, { label: 'green', id: 'green' }, { label: 'amber', id: 'amber' }, { label: 'off', id: 'off' }]
-		// 	}, {
-		// 		type: 'textinput',
-		// 		label: 'UMD message',
-		// 		id: 'message',
-		// 		default: 'CAM 1'
-		// 	}]
-		// },
+
 		'tallyV4': {
 			label: 'TSL V4',
 			options: [{
@@ -263,23 +231,6 @@ instance.prototype.action = function (action) {
 	let bufTally = 0;
 
 	switch (id) {
-
-		// case 'tallyV4':
-		// 	{
-		// 		let col = colorToBits(opt.color);
-
-		// 		if (opt.tallySide == 'right') {
-		// 			bufTally = (col << 4) | 4; // always set text col to red for V4... 
-		// 		}
-		// 		else
-		// 			bufTally = col | 4;
-
-		// 		let sum = (- bufUMD.reduce((a, b) => a + b, 0)) & 0x7f;
-
-		// 		cmd = Buffer.concat([bufUMD, Buffer.from([sum, 2, bufTally, 0])]);
-
-		// 		break;
-		// 	}
 		case 'tallyV4':
 			{
 				let textCol = colorToBits(opt.textColor) << 2;
