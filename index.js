@@ -302,7 +302,6 @@ instance.prototype.actions = function (system) {
 			}]
 		}
 	};
-
 	self.setActions(actions);
 };
 
@@ -330,7 +329,9 @@ instance.prototype.action = function (action) {
 	bufUMD.write(opt.message, 2);
 
 	let bufTally = 0;
+
 	switch (id) {
+
 		case 'tallyV4': {
 			let textCol = colorToBits(opt.textColor) << 2;
 
@@ -384,6 +385,7 @@ instance.prototype.action = function (action) {
 		}
 		case 'tallyV5UDP': {
 			let umd5 = new TSL5();
+
 			let tally = {
 				"screen": opt.screen,
 				"index": opt.index,
@@ -395,12 +397,15 @@ instance.prototype.action = function (action) {
 					"text": opt.message
 				}
 			}
+
 			debug('sending TSL5 UDP to', self.config.host, ':', self.config.port);
 			umd5.sendTallyUDP(self.config.host, self.config.port, tally);
+
 			break;
 		}
 		case 'tallyV5TCP': {
 			let umd5 = new TSL5();
+
 			let tally = {
 				"screen": opt.screen,
 				"index": opt.index,
@@ -412,8 +417,10 @@ instance.prototype.action = function (action) {
 					"text": opt.message
 				}
 			}
+
 			debug('sending TSL5 TCP to', self.config.host, ':', self.config.port);
 			umd5.sendTallyTCP(self.config.host, self.config.port, tally);
+			
 			break;
 		}
 	}
