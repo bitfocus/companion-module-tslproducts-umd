@@ -1,5 +1,6 @@
 var instance_skel = require('../../instance_skel');
 var udp = require('../../udp');
+var TSL5 = require('tsl-umd-v5');
 var debug;
 var log;
 
@@ -199,8 +200,109 @@ instance.prototype.actions = function (system) {
 				id: 'message',
 				default: 'CAM 1'
 			}]
+		},
+		'tallyV5UDP': {
+			label: 'V5 UDP Set text and multiple tallies',
+			options: [{
+				type: 'number',
+				label: 'Tally address',
+				id: 'address',
+				default: 1
+			},
+			{
+				type: 'number',
+				label: 'Screen',
+				id: 'screen',
+				default: 0
+			},
+			{
+				type: 'dropdown',
+				label: 'Text Tally',
+				id: 'text_tally',
+				default: 'red',
+				choices: [{ label: 'red', id: 'red' }, { label: 'green', id: 'green' }, { label: 'amber', id: 'amber' }, { label: 'off', id: 'off' }]
+			},
+			{
+				type: 'dropdown',
+				label: 'Right Tally',
+				id: 'rh_tally',
+				default: 'red',
+				choices: [{ label: 'red', id: 'red' }, { label: 'green', id: 'green' }, { label: 'amber', id: 'amber' }, { label: 'off', id: 'off' }]
+			},
+			{
+				type: 'dropdown',
+				label: 'Left Tally',
+				id: 'lh_tally',
+				default: 'red',
+				choices: [{ label: 'red', id: 'red' }, { label: 'green', id: 'green' }, { label: 'amber', id: 'amber' }, { label: 'off', id: 'off' }]
+			},
+			{
+				type: 'number',
+				label: 'Brightness',
+				id: 'brightness',
+				default: 3,
+				min: 0,
+				max: 3
+			},
+			{
+				type: 'textinput',
+				label: 'UMD message',
+				id: 'message',
+				default: 'CAM 1'
+			}]
+		},
+		'tallyV5TCP': {
+			label: 'V5 TCP Set text and multiple tallies',
+			options: [{
+				type: 'number',
+				label: 'Tally address',
+				id: 'address',
+				default: 1
+			},
+			{
+				type: 'number',
+				label: 'Screen',
+				id: 'screen',
+				default: 0
+			},
+			{
+				type: 'dropdown',
+				label: 'Text Tally',
+				id: 'text_tally',
+				default: 'red',
+				choices: [{ label: 'red', id: 'red' }, { label: 'green', id: 'green' }, { label: 'amber', id: 'amber' }, { label: 'off', id: 'off' }]
+			},
+			{
+				type: 'dropdown',
+				label: 'Right Tally',
+				id: 'rh_tally',
+				default: 'red',
+				choices: [{ label: 'red', id: 'red' }, { label: 'green', id: 'green' }, { label: 'amber', id: 'amber' }, { label: 'off', id: 'off' }]
+			},
+			{
+				type: 'dropdown',
+				label: 'Left Tally',
+				id: 'lh_tally',
+				default: 'red',
+				choices: [{ label: 'red', id: 'red' }, { label: 'green', id: 'green' }, { label: 'amber', id: 'amber' }, { label: 'off', id: 'off' }]
+			},
+			{
+				type: 'number',
+				label: 'Brightness',
+				id: 'brightness',
+				default: 3,
+				min: 0,
+				max: 3
+			},
+			{
+				type: 'textinput',
+				label: 'UMD message',
+				id: 'message',
+				default: 'CAM 1'
+			}]
 		}
 	};
+
 	self.setActions(actions);
 };
 
@@ -228,9 +330,7 @@ instance.prototype.action = function (action) {
 	bufUMD.write(opt.message, 2);
 
 	let bufTally = 0;
-
 	switch (id) {
-
 		case 'tallyV4': {
 			let textCol = colorToBits(opt.textColor) << 2;
 
@@ -280,6 +380,40 @@ instance.prototype.action = function (action) {
 			bufUMD[1] = bufTally;
 			cmd = bufUMD;
 
+			break;
+		}
+		case 'tallyV5UDP': {
+			let umd5 = new TSL5();
+			let tally = {
+				"screen": opt.screen,
+				"index": opt.index,
+				"display": {
+					"rh_tally": colorToBits(opt.rh_tally),
+					"text_tally": colorToBits(opt.text_tally),
+					"lh_tally": colorToBits(opt.lh_tally),
+					"brightness": opt.brightness,
+					"text": opt.message
+				}
+			}
+			debug('sending TSL5 UDP to', self.config.host, ':', self.config.port);
+			umd5.sendTallyUDP(self.config.host, self.config.port, tally);
+			break;
+		}
+		case 'tallyV5TCP': {
+			let umd5 = new TSL5();
+			let tally = {
+				"screen": opt.screen,
+				"index": opt.index,
+				"display": {
+					"rh_tally": colorToBits(opt.rh_tally),
+					"text_tally": colorToBits(opt.text_tally),
+					"lh_tally": colorToBits(opt.lh_tally),
+					"brightness": opt.brightness,
+					"text": opt.message
+				}
+			}
+			debug('sending TSL5 TCP to', self.config.host, ':', self.config.port);
+			umd5.sendTallyTCP(self.config.host, self.config.port, tally);
 			break;
 		}
 	}
