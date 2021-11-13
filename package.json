@@ -20,6 +20,6 @@
 	],
 	"license": "MIT",
 	"dependencies": {
-		"tsl-umd-v5": "^1.0.3"
+		"tsl-umd-v5": "^1.0.4"
 	}
 }

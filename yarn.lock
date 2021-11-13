@@ -24,10 +24,10 @@ net@^1.0.2:
   resolved "https://registry.yarnpkg.com/net/-/net-1.0.2.tgz#d1757ec9a7fb2371d83cf4755ce3e27e10829388"
   integrity sha1-0XV+yaf7I3HYPPR1XOPifhCCk4g=
 
-tsl-umd-v5@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/tsl-umd-v5/-/tsl-umd-v5-1.0.3.tgz#e99f0fafe1037e9f4aa59260d57f324f706bab95"
-  integrity sha512-9RxsbQQFdEntsAVKQ9DzsAPrOiNAC2i8KMBid8feOCzQKN54/niCbbB46O9SKT1aNUowz3VpFnUdVxb2z78Neg==
+tsl-umd-v5@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/tsl-umd-v5/-/tsl-umd-v5-1.0.4.tgz#65680ac0a74f9b09965377f1be961792d0017cbe"
+  integrity sha512-DfSeCLop8Anym9G8pW60xOQqOiKJGoW5/3ugWEl8Bvq11v1gPBpkqHDXkgMviVkfcv/Lm1FA1I9q4k3V9qC4Yw==
   dependencies:
     debug "^4.3.2"
     dgram "^1.0.1"
