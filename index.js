@@ -249,6 +249,12 @@ instance.prototype.actions = function (system) {
 				label: 'UMD message',
 				id: 'message',
 				default: 'CAM 1'
+			},
+			{	type: 'dropdown',
+				label: 'DLE/STX',
+				id: 'sequence',
+				default: 'default',
+				choices: [{ label: 'On', id: 'on' }, { label: 'Off', id: 'off' }, { label: 'Default', id: 'default' }]
 			}]
 		},
 		'tallyV5TCP': {
@@ -299,6 +305,12 @@ instance.prototype.actions = function (system) {
 				label: 'UMD message',
 				id: 'message',
 				default: 'CAM 1'
+			},
+			{	type: 'dropdown',
+				label: 'DLE/STX',
+				id: 'sequence',
+				default: 'default',
+				choices: [{ label: 'On', id: 'on' }, { label: 'Off', id: 'off' }, { label: 'Default', id: 'default' }]
 			}]
 		}
 	};
@@ -385,6 +397,7 @@ instance.prototype.action = function (action) {
 		}
 		case 'tallyV5UDP': {
 			let umd5 = new TSL5();
+			let sequence = null;
 
 			let tally = {
 				"screen": opt.screen,
@@ -398,13 +411,20 @@ instance.prototype.action = function (action) {
 				}
 			}
 
+			if (opt.sequence == 'on'){
+				sequence = true
+			} else if (opt.sequence == 'off') {
+				sequence = false
+			}
+
 			debug('sending TSL5 UDP to', self.config.host, ':', self.config.port);
-			umd5.sendTallyUDP(self.config.host, self.config.port, tally);
+			umd5.sendTallyUDP(self.config.host, self.config.port, tally, sequence);
 
 			break;
 		}
 		case 'tallyV5TCP': {
 			let umd5 = new TSL5();
+			let sequence = null
 
 			let tally = {
 				"screen": opt.screen,
@@ -418,8 +438,14 @@ instance.prototype.action = function (action) {
 				}
 			}
 
+			if (opt.sequence == 'on'){
+				sequence = true
+			} else if (opt.sequence == 'off') {
+				sequence = false
+			}
+
 			debug('sending TSL5 TCP to', self.config.host, ':', self.config.port);
-			umd5.sendTallyTCP(self.config.host, self.config.port, tally);
+			umd5.sendTallyTCP(self.config.host, self.config.port, tally, sequence);
 			
 			break;
 		}
