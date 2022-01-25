@@ -11,3 +11,10 @@ Legacy commands TallyV3
 ## Version 4.0
 
 * Set Tally left and right including RED/GREEN/AMBER
+
+## Version 5.0
+
+* Set Tally left, right and text RED/GREEN/AMBER/OFF
+* Address Screen and Index
+* Set Display Brightness
+* Supports TCP and UDP 
