@@ -21,5 +21,13 @@
 	"license": "MIT",
 	"dependencies": {
 		"tsl-umd-v5": "^1.0.5"
+	},
+	"homepage": "https://github.com/bitfocus/companion-module-tslproducts-umd#readme",
+	"bugs": {
+		"url": "https://github.com/bitfocus/companion-module-tslproducts-umd/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/bitfocus/companion-module-tslproducts-umd.git"
 	}
 }
