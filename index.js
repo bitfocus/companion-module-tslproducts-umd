@@ -66,13 +66,13 @@ instance.prototype.config_fields = function () {
 			width: 12,
 			label: 'Information',
 			value: 'This module is for the TSL protocol'
-		},{
+		}, {
 			type: 'textinput',
 			id: 'host',
 			label: 'Target IP',
 			width: 6,
 			regex: self.REGEX_IP
-		},{
+		}, {
 			type: 'textinput',
 			id: 'port',
 			label: 'Target port',
@@ -99,56 +99,56 @@ instance.prototype.actions = function (system) {
 		'tallyV3': {
 			label: 'V3.1 Set text and single tally',
 			options: [
-			{
-				type: 'textinput',
-				label: 'Tally address',
-				id: 'address',
-				default: '0',
-				regex: self.REGEX_NUMBER
-			},{
-				type: 'dropdown',
-				label: 'Tally number',
-				id: 'tallyNumber',
-				default: '1',
-				choices: [{ label: '1', id: '1' }, { label: '2', id: '2' }, { label: '3', id: '3' }, { label: '4', id: '4' }, { label: 'off', id: 'off' }]
-			},{
-				type: 'textinput',
-				label: 'UMD message',
-				id: 'message',
-				default: 'CAM 1'
-			}]
+				{
+					type: 'textinput',
+					label: 'Tally address',
+					id: 'address',
+					default: '0',
+					regex: self.REGEX_NUMBER
+				}, {
+					type: 'dropdown',
+					label: 'Tally number',
+					id: 'tallyNumber',
+					default: '1',
+					choices: [{ label: '1', id: '1' }, { label: '2', id: '2' }, { label: '3', id: '3' }, { label: '4', id: '4' }, { label: 'off', id: 'off' }]
+				}, {
+					type: 'textinput',
+					label: 'UMD message',
+					id: 'message',
+					default: 'CAM 1'
+				}]
 		},
 		'tallyV3Multi': {
 			label: 'V3.1 Set text and multiple tallies',
 			options: [
-			{
-				type: 'textinput',
-				label: 'Tally address',
-				id: 'address',
-				default: '0',
-				regex: self.REGEX_NUMBER
-			},{
-				type: 'checkbox',
-				label: 'Tally 1',
-				id: 'tally1',
-			},{
-				type: 'checkbox',
-				label: 'Tally 2',
-				id: 'tally2',
-			},{
-				type: 'checkbox',
-				label: 'Tally 3',
-				id: 'tally3',
-			},{
-				type: 'checkbox',
-				label: 'Tally 4',
-				id: 'tally4',
-			},{
-				type: 'textinput',
-				label: 'UMD message',
-				id: 'message',
-				default: 'CAM 1'
-			}]
+				{
+					type: 'textinput',
+					label: 'Tally address',
+					id: 'address',
+					default: '0',
+					regex: self.REGEX_NUMBER
+				}, {
+					type: 'checkbox',
+					label: 'Tally 1',
+					id: 'tally1',
+				}, {
+					type: 'checkbox',
+					label: 'Tally 2',
+					id: 'tally2',
+				}, {
+					type: 'checkbox',
+					label: 'Tally 3',
+					id: 'tally3',
+				}, {
+					type: 'checkbox',
+					label: 'Tally 4',
+					id: 'tally4',
+				}, {
+					type: 'textinput',
+					label: 'UMD message',
+					id: 'message',
+					default: 'CAM 1'
+				}]
 		},
 
 		'tallyV4': {
@@ -250,7 +250,8 @@ instance.prototype.actions = function (system) {
 				id: 'message',
 				default: 'CAM 1'
 			},
-			{	type: 'dropdown',
+			{
+				type: 'dropdown',
 				label: 'DLE/STX',
 				id: 'sequence',
 				default: 'default',
@@ -306,7 +307,8 @@ instance.prototype.actions = function (system) {
 				id: 'message',
 				default: 'CAM 1'
 			},
-			{	type: 'dropdown',
+			{
+				type: 'dropdown',
 				label: 'DLE/STX',
 				id: 'sequence',
 				default: 'default',
@@ -401,7 +403,7 @@ instance.prototype.action = function (action) {
 
 			let tally = {
 				"screen": opt.screen,
-				"index": opt.index,
+				"index": opt.address,
 				"display": {
 					"rh_tally": colorToBits(opt.rh_tally),
 					"text_tally": colorToBits(opt.text_tally),
@@ -411,7 +413,7 @@ instance.prototype.action = function (action) {
 				}
 			}
 
-			if (opt.sequence == 'on'){
+			if (opt.sequence == 'on') {
 				sequence = true
 			} else if (opt.sequence == 'off') {
 				sequence = false
@@ -428,7 +430,7 @@ instance.prototype.action = function (action) {
 
 			let tally = {
 				"screen": opt.screen,
-				"index": opt.index,
+				"index": opt.address,
 				"display": {
 					"rh_tally": colorToBits(opt.rh_tally),
 					"text_tally": colorToBits(opt.text_tally),
@@ -438,7 +440,7 @@ instance.prototype.action = function (action) {
 				}
 			}
 
-			if (opt.sequence == 'on'){
+			if (opt.sequence == 'on') {
 				sequence = true
 			} else if (opt.sequence == 'off') {
 				sequence = false
@@ -446,7 +448,7 @@ instance.prototype.action = function (action) {
 
 			debug('sending TSL5 TCP to', self.config.host, ':', self.config.port);
 			umd5.sendTallyTCP(self.config.host, self.config.port, tally, sequence);
-			
+
 			break;
 		}
 	}
