@@ -338,6 +338,10 @@ instance.prototype.action = function (action) {
 	const opt = action.options;
 	var cmd;
 
+	self.parseVariables(opt.message, function (message) {
+		opt.message = message;
+	});
+
 	var bufUMD = Buffer.alloc(18, 0); //ignore spec and pad with 0 for better aligning on Decimator etc
 	bufUMD[0] = 0x80 + parseInt(opt.address); //Address + 0x80
 	bufUMD.write(opt.message, 2);
