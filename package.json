@@ -1,31 +1,14 @@
 {
 	"name": "tslproducts-umd",
-	"version": "1.2.5",
-	"api_version": "1.0.0",
-	"keywords": [
-		"Protocol"
-	],
-	"manufacturer": "TSL Products",
-	"product": "UMD protocol",
-	"shortname": "tsl-umd",
-	"description": "TSL protocol plugin for Companion",
+	"version": "2.0.0",
 	"main": "index.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
-	"author": "Jeffrey Davidsz <jeffrey.davidsz@vicreo.eu>",
-	"contributors": [
-		"Roddy Pratt <roddy@rascular.com>",
-		"Noah Callaway <noah@thecallaways.net>"
-	],
 	"license": "MIT",
 	"dependencies": {
 		"@companion-module/base": "~1.4.1",
 		"tsl-umd-v5": "^1.0.5"
-	},
-	"homepage": "https://github.com/bitfocus/companion-module-tslproducts-umd#readme",
-	"bugs": {
-		"url": "https://github.com/bitfocus/companion-module-tslproducts-umd/issues"
 	},
 	"repository": {
 		"type": "git",
