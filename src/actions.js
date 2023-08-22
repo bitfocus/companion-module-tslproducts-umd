@@ -11,7 +11,8 @@ module.exports = {
 					label: 'Tally address',
 					id: 'address',
 					default: '0',
-					regex: self.REGEX_NUMBER
+					regex: self.REGEX_NUMBER,
+					useVariables: true,
 				}, {
 					type: 'dropdown',
 					label: 'Tally number',
@@ -22,7 +23,8 @@ module.exports = {
 					type: 'textinput',
 					label: 'UMD message',
 					id: 'message',
-					default: 'CAM 1'
+					default: 'CAM 1',
+					useVariables: true,
 				}
 			],
 			callback: async function (action) {
@@ -64,6 +66,61 @@ module.exports = {
 				bufUMD[1] = bufTally;
 				
 				self.sendCommand(bufUMD);
+
+				//now update the internal store
+				let found = false;
+
+				for (let i = 0; i < self.DATA.tallies.length; i++) {
+					if (self.DATA.tallies[i].address == address) {
+						if (opt.tallyNumber == '1') {
+							self.DATA.tallies[i].tally1 = 1;
+						}
+						else if (opt.tallyNumber == '2') {
+							self.DATA.tallies[i].tally2 = 1;
+						}
+						else if (opt.tallyNumber == '3') {
+							self.DATA.tallies[i].tally3 = 1;
+						}
+						else if (opt.tallyNumber == '4') {
+							self.DATA.tallies[i].tally4 = 1;
+						}
+
+						self.DATA.tallies[i].message = message;
+						found = true;
+						break;
+					}
+				}
+				
+				if (!found) {
+					let tallyObj = {
+						address: address,
+						tally1: 0,
+						tally2: 0,
+						tally3: 0,
+						tally4: 0,
+						message: message,
+					}
+
+					if (opt.tallyNumber == '1') {
+						tallyObj.tally1 = 1;
+					}
+					else if (opt.tallyNumber == '2') {
+						tallyObj.tally2 = 1;
+					}
+					else if (opt.tallyNumber == '3') {
+						tallyObj.tally3 = 1;
+					}
+					else if (opt.tallyNumber == '4') {
+						tallyObj.tally4 = 1;
+					}
+
+					self.DATA.tallies.push(tallyObj);
+
+					self.initVariables();
+				}
+
+				//update variables
+				self.checkVariables();
 			}
 		};
 
@@ -75,7 +132,8 @@ module.exports = {
 					label: 'Tally address',
 					id: 'address',
 					default: '0',
-					regex: self.REGEX_NUMBER
+					regex: self.REGEX_NUMBER,
+					useVariables: true,
 				},
 				{
 					type: 'dropdown',
@@ -201,13 +259,15 @@ module.exports = {
 					label: 'Tally address',
 					id: 'address',
 					default: '0',
-					regex: self.REGEX_NUMBER
+					regex: self.REGEX_NUMBER,
+					useVariables: true,
 				},
 				{
 					type: 'textinput',
 					label: 'UMD message',
 					id: 'message',
-					default: 'CAM 1'
+					default: 'CAM 1',
+					useVariables: true,
 				}
 			],
 			callback: async function (action) {
@@ -215,6 +275,8 @@ module.exports = {
 		
 				let optAddress = await self.parseVariablesInString(opt.address)
 				let address = parseInt(optAddress);
+
+				let optMessage = await self.parseVariablesInString(opt.message);
 
 				if (isNaN(address)) {
 					self.log('error', 'Address is not a number: ' + optAddress);
@@ -226,7 +288,7 @@ module.exports = {
 					tally2: 0,
 					tally3: 0,
 					tally4: 0,
-					message: opt.message,
+					message: optMessage,
 				};
 
 				//now find this tally address in the internal store
@@ -302,7 +364,8 @@ module.exports = {
 					label: 'Tally address',
 					id: 'address',
 					default: '0',
-					regex: self.REGEX_NUMBER
+					regex: self.REGEX_NUMBER,
+					useVariables: true,
 				}, {
 					type: 'checkbox',
 					label: 'Tally 1',
@@ -323,7 +386,8 @@ module.exports = {
 					type: 'textinput',
 					label: 'UMD message',
 					id: 'message',
-					default: 'CAM 1'
+					default: 'CAM 1',
+					useVariables: true,
 				}],
 			callback: async function (action) {
 				let opt = action.options;
@@ -363,11 +427,35 @@ module.exports = {
 				self.sendCommand(bufUMD);
 
 				//now update the internal store
-				self.DATA.tally1 = opt.tally1 ? 1 : 0;
-				self.DATA.tally2 = opt.tally2 ? 1 : 0;
-				self.DATA.tally3 = opt.tally3 ? 1 : 0;
-				self.DATA.tally4 = opt.tally4 ? 1 : 0;
-				self.DATA.message = message;
+				let found = false;
+
+				for (let i = 0; i < self.DATA.tallies.length; i++) {
+					if (self.DATA.tallies[i].address == address) {
+						self.DATA.tallies[i].tally1 = opt.tally1 ? 1 : 0;
+						self.DATA.tallies[i].tally2 = opt.tally2 ? 1 : 0;
+						self.DATA.tallies[i].tally3 = opt.tally3 ? 1 : 0;
+						self.DATA.tallies[i].tally4 = opt.tally4 ? 1 : 0;
+						self.DATA.tallies[i].message = message;
+						found = true;
+						break;
+					}
+				}
+				
+				if (!found) {
+					self.DATA.tallies.push({
+						address: address,
+						tally1: opt.tally1 ? 1 : 0,
+						tally2: opt.tally2 ? 1 : 0,
+						tally3: opt.tally3 ? 1 : 0,
+						tally4: opt.tally4 ? 1 : 0,
+						message: message,
+					});
+
+					self.initVariables();
+				}
+
+				//update variables
+				self.checkVariables();
 			}
 		};
 		
@@ -378,7 +466,8 @@ module.exports = {
 				label: 'Tally address',
 				id: 'address',
 				default: '0',
-				regex: self.REGEX_NUMBER
+				regex: self.REGEX_NUMBER,
+				useVariables: true,
 			}, {
 				type: 'dropdown',
 				label: 'Tally 1',
@@ -418,7 +507,8 @@ module.exports = {
 				type: 'textinput',
 				label: 'UMD message',
 				id: 'message',
-				default: 'CAM 1'
+				default: 'CAM 1',
+				useVariables: true,
 			}],
 			callback: async function (action) {
 				let opt = action.options;
