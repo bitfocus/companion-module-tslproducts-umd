@@ -658,13 +658,15 @@ module.exports = {
 				type: 'number',
 				label: 'Tally address',
 				id: 'address',
-				default: 1
+				default: 1,
+				useVariables: true
 			},
 			{
 				type: 'number',
 				label: 'Screen',
 				id: 'screen',
-				default: 0
+				default: 0,
+				useVariables: true
 			},
 			{
 				type: 'dropdown',
@@ -699,7 +701,8 @@ module.exports = {
 				type: 'textinput',
 				label: 'UMD message',
 				id: 'message',
-				default: 'CAM 1'
+				default: 'CAM 1',
+				useVariables: true
 			},
 			{
 				type: 'dropdown',
