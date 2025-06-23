@@ -33,10 +33,6 @@
 		"entrypoint": "../index.js"
 	},
 	"manufacturer": "TSL Products",
-	"products": [
-		"UMD protocol"
-	],
-	"keywords": [
-		"Protocol"
-	]
+	"products": ["UMD protocol"],
+	"keywords": ["Protocol"]
 }

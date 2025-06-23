@@ -8,14 +8,14 @@ module.exports = {
 				id: 'info',
 				width: 12,
 				label: 'Information',
-				value: 'This module is for the TSL UMD protocol.'
+				value: 'This module is for the TSL UMD protocol.',
 			},
 			{
 				type: 'textinput',
 				id: 'host',
 				label: 'Target IP',
 				width: 6,
-				regex: Regex.IP
+				regex: Regex.IP,
 			},
 			{
 				type: 'textinput',
@@ -23,7 +23,7 @@ module.exports = {
 				label: 'Target port',
 				default: '40001',
 				width: 6,
-				regex: Regex.PORT
+				regex: Regex.PORT,
 			},
 		]
 	},

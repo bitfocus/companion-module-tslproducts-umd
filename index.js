@@ -19,28 +19,28 @@ class tslumdInstance extends InstanceBase {
 		})
 
 		this.DATA = {
-			tallies: []
-		};
+			tallies: [],
+		}
 	}
 
 	async destroy() {
-		let self = this;
+		let self = this
 
 		if (self.udp !== undefined) {
-			self.udp.destroy();
+			self.udp.destroy()
 		}
 	}
 
 	async init(config) {
-		this.configUpdated(config);
+		this.configUpdated(config)
 	}
 
 	async configUpdated(config) {
-		this.config = config;
-		
-		this.initActions();
-		this.initVariables();
-		this.initUDP();
+		this.config = config
+
+		this.initActions()
+		this.initVariables()
+		this.initUDP()
 	}
 }
 
