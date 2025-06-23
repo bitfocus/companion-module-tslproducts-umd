@@ -14,9 +14,8 @@
 
 - Set Tally left and right including RED/GREEN/AMBER
 
-## Version 5.0
+## Version 5.0 (UDP and TCP)
 
 - Set Tally left, right and text RED/GREEN/AMBER/OFF
 - Address Screen and Index
 - Set Display Brightness
-- Supports TCP and UDP
