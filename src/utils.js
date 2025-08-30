@@ -9,7 +9,7 @@ module.exports = {
 			self.udp = new UDPHelper(self.config.host, self.config.port)
 
 			self.udp.on('error', (err) => {
-				self.log('error', 'UDP error', err)
+				self.log('error', `UDP error: ${err}`)
 				self.updateStatus(InstanceStatus.Error, err)
 			})
 		}
@@ -32,8 +32,20 @@ module.exports = {
 		let self = this
 
 		if (cmd !== undefined && self.udp !== undefined) {
-			self.log('debug', 'sending ', cmd, 'to', self.udp.host)
+			self.log('debug', `sending ${cmd} to ${self.udp.host}`)
 			self.udp.send(cmd)
+		}
+
+		if (self.config.enableRepeatInterval && self.config.repeatInterval > 0) {
+			if (self.repeatInterval) {
+				clearInterval(self.repeatInterval)
+			}
+			self.repeatInterval = setInterval(() => {
+				if (cmd !== undefined && self.udp !== undefined) {
+					self.log('debug', `resending ${cmd} to ${self.config.host}:${self.config.port}`)
+					self.udp.send(cmd)
+				}
+			}, self.config.repeatInterval)
 		}
 	},
 
@@ -42,8 +54,18 @@ module.exports = {
 
 		let umd5 = new TSL5()
 
-		self.log('debug', 'sending TSL5 UDP to', self.config.host, ':', self.config.port)
+		self.log('debug', `sending TSL5 UDP to ${self.config.host}:${self.config.port}`)
 		umd5.sendTallyUDP(self.config.host, self.config.port, tally, sequence)
+
+		if (self.config.enableRepeatInterval && self.config.repeatInterval > 0) {
+			if (self.repeatInterval) {
+				clearInterval(self.repeatInterval)
+			}
+			self.repeatInterval = setInterval(() => {
+				self.log('debug', `resending TSL5 UDP to ${self.config.host}:${self.config.port}`)
+				umd5.sendTallyUDP(self.config.host, self.config.port, tally, sequence)
+			}, self.config.repeatInterval)
+		}
 	},
 
 	sendTSL5TCP: function (tally, sequence) {
@@ -51,7 +73,17 @@ module.exports = {
 
 		let umd5 = new TSL5()
 
-		self.log('debug', 'sending TSL5 TCP to', self.config.host, ':', self.config.port)
+		self.log('debug', `sending TSL5 TCP to ${self.config.host}:${self.config.port}`)
 		umd5.sendTallyTCP(self.config.host, self.config.port, tally, sequence)
+
+		if (self.config.enableRepeatInterval && self.config.repeatInterval > 0) {
+			if (self.repeatInterval) {
+				clearInterval(self.repeatInterval)
+			}
+			self.repeatInterval = setInterval(() => {
+				self.log('debug', `resending TSL5 TCP to ${self.config.host}:${self.config.port}`)
+				umd5.sendTallyTCP(self.config.host, self.config.port, tally, sequence)
+			}, self.config.repeatInterval)
+		}
 	},
 }

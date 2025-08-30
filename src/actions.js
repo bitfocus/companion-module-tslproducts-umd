@@ -42,7 +42,7 @@ module.exports = {
 				let address = parseInt(optAddress)
 
 				if (isNaN(address)) {
-					self.log('error', 'Address is not a number: ' + optAddress)
+					self.log('error', `Address is not a number: ${optAddress}`)
 					return
 				}
 
@@ -160,7 +160,7 @@ module.exports = {
 				let address = parseInt(optAddress)
 
 				if (isNaN(address)) {
-					self.log('error', 'Address is not a number: ' + optAddress)
+					self.log('error', `Address is not a number: ${optAddress}`)
 					return
 				}
 
@@ -283,7 +283,7 @@ module.exports = {
 				let optMessage = await self.parseVariablesInString(opt.message)
 
 				if (isNaN(address)) {
-					self.log('error', 'Address is not a number: ' + optAddress)
+					self.log('error', `Address is not a number: ${optAddress}`)
 					return
 				}
 
@@ -406,7 +406,7 @@ module.exports = {
 				let address = parseInt(optAddress)
 
 				if (isNaN(address)) {
-					self.log('error', 'Address is not a number: ' + optAddress)
+					self.log('error', `Address is not a number: ${optAddress}`)
 					return
 				}
 
@@ -554,7 +554,7 @@ module.exports = {
 				let address = parseInt(optAddress)
 
 				if (isNaN(address)) {
-					self.log('error', 'Address is not a number: ' + optAddress)
+					self.log('error', `Address is not a number: ${optAddress}`)
 					return
 				}
 
@@ -665,7 +665,7 @@ module.exports = {
 				let screen = parseInt(optScreen)
 
 				if (isNaN(screen)) {
-					self.log('error', 'Screen is not a number: ' + optScreen)
+					self.log('error', `Screen is not a number: ${optScreen}`)
 					return
 				}
 
@@ -673,7 +673,7 @@ module.exports = {
 				let address = parseInt(optAddress)
 
 				if (isNaN(address)) {
-					self.log('error', 'Address is not a number: ' + optAddress)
+					self.log('error', `Address is not a number: ${optAddress}`)
 					return
 				}
 
@@ -681,7 +681,7 @@ module.exports = {
 				let brightness = parseInt(optBrightness)
 
 				if (isNaN(brightness)) {
-					self.log('error', 'Brightness is not a number: ' + optBrightness)
+					self.log('error', `Brightness is not a number: ${optBrightness}`)
 					return
 				}
 
@@ -798,7 +798,7 @@ module.exports = {
 				let screen = parseInt(optScreen)
 
 				if (isNaN(screen)) {
-					self.log('error', 'Screen is not a number: ' + optScreen)
+					self.log('error', `Screen is not a number: ${optScreen}`)
 					return
 				}
 
@@ -806,7 +806,7 @@ module.exports = {
 				let address = parseInt(optAddress)
 
 				if (isNaN(address)) {
-					self.log('error', 'Address is not a number: ' + optAddress)
+					self.log('error', `Address is not a number: ${optAddress}`)
 					return
 				}
 
@@ -814,7 +814,7 @@ module.exports = {
 				let brightness = parseInt(optBrightness)
 
 				if (isNaN(brightness)) {
-					self.log('error', 'Brightness is not a number: ' + optBrightness)
+					self.log('error', `Brightness is not a number: ${optBrightness}`)
 					return
 				}
 
@@ -839,6 +839,18 @@ module.exports = {
 				}
 
 				self.sendTSL5TCP(tally, sequence)
+			},
+		}
+
+		actions.stopRepeat = {
+			name: 'Stop repeating last sent packet',
+			options: [],
+			callback: async function () {
+				if (self.repeatInterval !== null) {
+					self.log('info', 'Stopping repeated sending of last packet')
+					clearInterval(self.repeatInterval)
+					self.repeatInterval = null
+				}
 			},
 		}
 

@@ -21,6 +21,8 @@ class tslumdInstance extends InstanceBase {
 		this.DATA = {
 			tallies: [],
 		}
+
+		this.repeatInterval = null
 	}
 
 	async destroy() {
@@ -28,6 +30,11 @@ class tslumdInstance extends InstanceBase {
 
 		if (self.udp !== undefined) {
 			self.udp.destroy()
+		}
+
+		if (self.repeatInterval !== null) {
+			clearInterval(self.repeatInterval)
+			self.repeatInterval = null
 		}
 	}
 
