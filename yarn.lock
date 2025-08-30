@@ -1290,10 +1290,10 @@ ts-declaration-location@^1.0.6:
   dependencies:
     picomatch "^4.0.2"
 
-tsl-umd-v5@^1.0.5:
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/tsl-umd-v5/-/tsl-umd-v5-1.0.5.tgz#f5f0ed82df7f558bb31ea75e88f004c645e31a04"
-  integrity sha512-3SfKpMCS0jx1Tn/KBqIG1SsnnPHuqFbn8DkuloA7YqiOYyr8TwoWMosMOYG2QHRz05dZ2Bx48Sx/dl6VeSOd5Q==
+tsl-umd-v5@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/tsl-umd-v5/-/tsl-umd-v5-1.0.6.tgz#da33d797bff4d0ae01167c66dbb81a23f46a9d29"
+  integrity sha512-9LLubarIHHRNHkQ8eKQ9rgXw33Q2NJYr+/AeySvi0SVn+hamyiOJaM9lyd2y0tKykxwlrZOGPaNgNvPkQLVcPQ==
   dependencies:
     debug "^4.3.2"
     dgram "^1.0.1"
