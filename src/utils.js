@@ -32,7 +32,7 @@ module.exports = {
 		let self = this
 
 		if (cmd !== undefined && self.udp !== undefined) {
-			self.log('debug', `sending ${cmd} to ${self.udp.host}`)
+			self.log('debug', `sending ${cmd} to ${self.config.host}`)
 			self.udp.send(cmd)
 		}
 
