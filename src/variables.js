@@ -1,30 +1,25 @@
 module.exports = {
 	initVariables: function () {
 		let self = this
-		let variables = []
+		let variables = {}
 
 		for (let i = 0; i < self.DATA.tallies.length; i++) {
 			let tally = self.DATA.tallies[i]
-			variables.push({
-				variableId: 'address' + tally.address + '_tally1_last',
+			variables['address' + tally.address + '_tally1_last'] = {
 				name: 'Address ' + tally.address + ' Tally 1 Last State',
-			})
-			variables.push({
-				variableId: 'address' + tally.address + '_tally2_last',
+			}
+			variables['address' + tally.address + '_tally2_last'] = {
 				name: 'Address ' + tally.address + ' Tally 2 Last State',
-			})
-			variables.push({
-				variableId: 'address' + tally.address + '_tally3_last',
+			}
+			variables['address' + tally.address + '_tally3_last'] = {
 				name: 'Address ' + tally.address + ' Tally 3 Last State',
-			})
-			variables.push({
-				variableId: 'address' + tally.address + '_tally4_last',
+			}
+			variables['address' + tally.address + '_tally4_last'] = {
 				name: 'Address ' + tally.address + ' Tally 4 Last State',
-			})
-			variables.push({
-				variableId: 'address' + tally.address + '_message_last',
+			}
+			variables['address' + tally.address + '_message_last'] = {
 				name: 'Address ' + tally.address + ' Last Message',
-			})
+			}
 		}
 
 		self.setVariableDefinitions(variables)

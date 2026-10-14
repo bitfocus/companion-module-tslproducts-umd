@@ -1,12 +1,12 @@
-const { InstanceBase, runEntrypoint } = require('@companion-module/base')
-const UpgradeScripts = require('./src/upgrades')
+import { InstanceBase } from '@companion-module/base'
+import UpgradeScripts from './src/upgrades.js'
 
-const config = require('./src/config')
-const actions = require('./src/actions')
-const variables = require('./src/variables')
-const utils = require('./src/utils')
+import config from './src/config.js'
+import actions from './src/actions.js'
+import variables from './src/variables.js'
+import utils from './src/utils.js'
 
-class tslumdInstance extends InstanceBase {
+export default class tslumdInstance extends InstanceBase {
 	constructor(internal) {
 		super(internal)
 
@@ -51,4 +51,4 @@ class tslumdInstance extends InstanceBase {
 	}
 }
 
-runEntrypoint(tslumdInstance, UpgradeScripts)
+export { UpgradeScripts }

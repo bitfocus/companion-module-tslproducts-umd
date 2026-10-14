@@ -7,11 +7,11 @@ module.exports = {
 			name: 'V3.1 Set text and single tally',
 			options: [
 				{
-					type: 'textinput',
+					type: 'number',
+					asInteger: true,
 					label: 'Tally address',
 					id: 'address',
-					default: '0',
-					regex: self.REGEX_NUMBER,
+					default: 0,
 					useVariables: true,
 				},
 				{
@@ -38,19 +38,9 @@ module.exports = {
 			callback: async function (action) {
 				let opt = action.options
 
-				let optAddress = await self.parseVariablesInString(opt.address)
-				let address = parseInt(optAddress)
-
-				if (isNaN(address)) {
-					self.log('error', `Address is not a number: ${optAddress}`)
-					return
-				}
-
-				let message = await self.parseVariablesInString(opt.message)
-
 				var bufUMD = Buffer.alloc(18, 0) //ignore spec and pad with 0 for better aligning on Decimator etc
-				bufUMD[0] = 0x80 + address //Address + 0x80
-				bufUMD.write(message, 2)
+				bufUMD[0] = 0x80 + opt.address //Address + 0x80
+				bufUMD.write(opt.message, 2)
 
 				let bufTally = 0
 
@@ -75,7 +65,7 @@ module.exports = {
 				let found = false
 
 				for (let i = 0; i < self.DATA.tallies.length; i++) {
-					if (self.DATA.tallies[i].address == address) {
+					if (self.DATA.tallies[i].address == opt.address) {
 						if (opt.tallyNumber == '1') {
 							self.DATA.tallies[i].tally1 = 1
 						} else if (opt.tallyNumber == '2') {
@@ -86,7 +76,7 @@ module.exports = {
 							self.DATA.tallies[i].tally4 = 1
 						}
 
-						self.DATA.tallies[i].message = message
+						self.DATA.tallies[i].message = opt.message
 						found = true
 						break
 					}
@@ -94,12 +84,12 @@ module.exports = {
 
 				if (!found) {
 					let tallyObj = {
-						address: address,
+						address: opt.address,
 						tally1: 0,
 						tally2: 0,
 						tally3: 0,
 						tally4: 0,
-						message: message,
+						message: opt.message,
 					}
 
 					if (opt.tallyNumber == '1') {
@@ -126,11 +116,11 @@ module.exports = {
 			name: 'V3.1 Set single tally (using last sent for other tally values and UMD message)',
 			options: [
 				{
-					type: 'textinput',
+					type: 'number',
+					asInteger: true,
 					label: 'Tally address',
 					id: 'address',
-					default: '0',
-					regex: self.REGEX_NUMBER,
+					default: 0,
 					useVariables: true,
 				},
 				{
@@ -156,14 +146,6 @@ module.exports = {
 			callback: async function (action) {
 				let opt = action.options
 
-				let optAddress = await self.parseVariablesInString(opt.address)
-				let address = parseInt(optAddress)
-
-				if (isNaN(address)) {
-					self.log('error', `Address is not a number: ${optAddress}`)
-					return
-				}
-
 				let data = {
 					tally1: 0,
 					tally2: 0,
@@ -173,7 +155,7 @@ module.exports = {
 				}
 
 				//now find this tally address in the internal store
-				let tally = self.DATA.tallies.find((t) => t.address == address)
+				let tally = self.DATA.tallies.find((t) => t.address == opt.address)
 				if (tally) {
 					data.tally1 = tally.tally1
 					data.tally2 = tally.tally2
@@ -215,7 +197,7 @@ module.exports = {
 				}
 
 				let bufUMD = Buffer.alloc(18, 0) //ignore spec and pad with 0 for better aligning on Decimator etc
-				bufUMD[0] = 0x80 + address //Address + 0x80
+				bufUMD[0] = 0x80 + opt.address //Address + 0x80
 				bufUMD.write(data.message, 2)
 
 				bufUMD[1] = bufTally
@@ -226,7 +208,7 @@ module.exports = {
 				let found = false
 
 				for (let i = 0; i < self.DATA.tallies.length; i++) {
-					if (self.DATA.tallies[i].address == address) {
+					if (self.DATA.tallies[i].address == opt.address) {
 						self.DATA.tallies[i].tally1 = data.tally1
 						self.DATA.tallies[i].tally2 = data.tally2
 						self.DATA.tallies[i].tally3 = data.tally3
@@ -239,7 +221,7 @@ module.exports = {
 
 				if (!found) {
 					self.DATA.tallies.push({
-						address: address,
+						address: opt.address,
 						tally1: data.tally1,
 						tally2: data.tally2,
 						tally3: data.tally3,
@@ -259,11 +241,11 @@ module.exports = {
 			name: 'V3.1 Set UMD message only (using last sent for other tally values)',
 			options: [
 				{
-					type: 'textinput',
+					type: 'number',
+					asInteger: true,
 					label: 'Tally address',
 					id: 'address',
-					default: '0',
-					regex: self.REGEX_NUMBER,
+					default: 0,
 					useVariables: true,
 				},
 				{
@@ -277,26 +259,16 @@ module.exports = {
 			callback: async function (action) {
 				let opt = action.options
 
-				let optAddress = await self.parseVariablesInString(opt.address)
-				let address = parseInt(optAddress)
-
-				let optMessage = await self.parseVariablesInString(opt.message)
-
-				if (isNaN(address)) {
-					self.log('error', `Address is not a number: ${optAddress}`)
-					return
-				}
-
 				let data = {
 					tally1: 0,
 					tally2: 0,
 					tally3: 0,
 					tally4: 0,
-					message: optMessage,
+					message: opt.message,
 				}
 
 				//now find this tally address in the internal store
-				let tally = self.DATA.tallies.find((t) => t.address == address)
+				let tally = self.DATA.tallies.find((t) => t.address == opt.address)
 				if (tally) {
 					data.tally1 = tally.tally1
 					data.tally2 = tally.tally2
@@ -320,7 +292,7 @@ module.exports = {
 				}
 
 				let bufUMD = Buffer.alloc(18, 0) //ignore spec and pad with 0 for better aligning on Decimator etc
-				bufUMD[0] = 0x80 + address //Address + 0x80
+				bufUMD[0] = 0x80 + opt.address //Address + 0x80
 				bufUMD.write(data.message, 2)
 
 				bufUMD[1] = bufTally
@@ -331,7 +303,7 @@ module.exports = {
 				let found = false
 
 				for (let i = 0; i < self.DATA.tallies.length; i++) {
-					if (self.DATA.tallies[i].address == address) {
+					if (self.DATA.tallies[i].address == opt.address) {
 						self.DATA.tallies[i].tally1 = data.tally1
 						self.DATA.tallies[i].tally2 = data.tally2
 						self.DATA.tallies[i].tally3 = data.tally3
@@ -344,7 +316,7 @@ module.exports = {
 
 				if (!found) {
 					self.DATA.tallies.push({
-						address: address,
+						address: opt.address,
 						tally1: data.tally1,
 						tally2: data.tally2,
 						tally3: data.tally3,
@@ -364,11 +336,11 @@ module.exports = {
 			name: 'V3.1 Set text and multiple tallies',
 			options: [
 				{
-					type: 'textinput',
+					type: 'number',
+					asInteger: true,
 					label: 'Tally address',
 					id: 'address',
-					default: '0',
-					regex: self.REGEX_NUMBER,
+					default: 0,
 					useVariables: true,
 				},
 				{
@@ -402,19 +374,9 @@ module.exports = {
 			callback: async function (action) {
 				let opt = action.options
 
-				let optAddress = await self.parseVariablesInString(opt.address)
-				let address = parseInt(optAddress)
-
-				if (isNaN(address)) {
-					self.log('error', `Address is not a number: ${optAddress}`)
-					return
-				}
-
-				let message = await self.parseVariablesInString(opt.message)
-
 				var bufUMD = Buffer.alloc(18, 0) //ignore spec and pad with 0 for better aligning on Decimator etc
-				bufUMD[0] = 0x80 + address //Address + 0x80
-				bufUMD.write(message, 2)
+				bufUMD[0] = 0x80 + opt.address //Address + 0x80
+				bufUMD.write(opt.message, 2)
 
 				let bufTally = 0
 
@@ -440,12 +402,12 @@ module.exports = {
 				let found = false
 
 				for (let i = 0; i < self.DATA.tallies.length; i++) {
-					if (self.DATA.tallies[i].address == address) {
+					if (self.DATA.tallies[i].address == opt.address) {
 						self.DATA.tallies[i].tally1 = opt.tally1 ? 1 : 0
 						self.DATA.tallies[i].tally2 = opt.tally2 ? 1 : 0
 						self.DATA.tallies[i].tally3 = opt.tally3 ? 1 : 0
 						self.DATA.tallies[i].tally4 = opt.tally4 ? 1 : 0
-						self.DATA.tallies[i].message = message
+						self.DATA.tallies[i].message = opt.message
 						found = true
 						break
 					}
@@ -453,12 +415,12 @@ module.exports = {
 
 				if (!found) {
 					self.DATA.tallies.push({
-						address: address,
+						address: opt.address,
 						tally1: opt.tally1 ? 1 : 0,
 						tally2: opt.tally2 ? 1 : 0,
 						tally3: opt.tally3 ? 1 : 0,
 						tally4: opt.tally4 ? 1 : 0,
-						message: message,
+						message: opt.message,
 					})
 
 					self.initVariables()
@@ -473,11 +435,11 @@ module.exports = {
 			name: 'V4 Set text and multiple tallies',
 			options: [
 				{
-					type: 'textinput',
+					type: 'number',
+					asInteger: true,
 					label: 'Tally address',
 					id: 'address',
-					default: '0',
-					regex: self.REGEX_NUMBER,
+					default: 0,
 					useVariables: true,
 				},
 				{
@@ -550,19 +512,9 @@ module.exports = {
 			callback: async function (action) {
 				let opt = action.options
 
-				let optAddress = await self.parseVariablesInString(opt.address)
-				let address = parseInt(optAddress)
-
-				if (isNaN(address)) {
-					self.log('error', `Address is not a number: ${optAddress}`)
-					return
-				}
-
-				let message = await self.parseVariablesInString(opt.message)
-
 				var bufUMD = Buffer.alloc(18, 0) //ignore spec and pad with 0 for better aligning on Decimator etc
-				bufUMD[0] = 0x80 + address //Address + 0x80
-				bufUMD.write(message, 2)
+				bufUMD[0] = 0x80 + opt.address //Address + 0x80
+				bufUMD.write(opt.message, 2)
 
 				let bufTally = 0
 
@@ -584,12 +536,14 @@ module.exports = {
 			options: [
 				{
 					type: 'number',
+					asInteger: true,
 					label: 'Tally address',
 					id: 'address',
 					default: 1,
 				},
 				{
 					type: 'number',
+					asInteger: true,
 					label: 'Screen',
 					id: 'screen',
 					default: 0,
@@ -632,6 +586,7 @@ module.exports = {
 				},
 				{
 					type: 'number',
+					asInteger: true,
 					label: 'Brightness',
 					id: 'brightness',
 					default: 3,
@@ -661,41 +616,15 @@ module.exports = {
 
 				let sequence = null
 
-				let optScreen = await self.parseVariablesInString(opt.screen)
-				let screen = parseInt(optScreen)
-
-				if (isNaN(screen)) {
-					self.log('error', `Screen is not a number: ${optScreen}`)
-					return
-				}
-
-				let optAddress = await self.parseVariablesInString(opt.address)
-				let address = parseInt(optAddress)
-
-				if (isNaN(address)) {
-					self.log('error', `Address is not a number: ${optAddress}`)
-					return
-				}
-
-				let optBrightness = await self.parseVariablesInString(opt.brightness)
-				let brightness = parseInt(optBrightness)
-
-				if (isNaN(brightness)) {
-					self.log('error', `Brightness is not a number: ${optBrightness}`)
-					return
-				}
-
-				let message = await self.parseVariablesInString(opt.message)
-
 				let tally = {
-					screen: screen,
-					index: address,
+					screen: opt.screen,
+					index: opt.address,
 					display: {
 						rh_tally: self.colorToBits(opt.rh_tally),
 						text_tally: self.colorToBits(opt.text_tally),
 						lh_tally: self.colorToBits(opt.lh_tally),
-						brightness: brightness,
-						text: message,
+						brightness: opt.brightness,
+						text: opt.message,
 					},
 				}
 
@@ -714,6 +643,7 @@ module.exports = {
 			options: [
 				{
 					type: 'number',
+					asInteger: true,
 					label: 'Tally address',
 					id: 'address',
 					default: 1,
@@ -721,6 +651,7 @@ module.exports = {
 				},
 				{
 					type: 'number',
+					asInteger: true,
 					label: 'Screen',
 					id: 'screen',
 					default: 0,
@@ -764,6 +695,7 @@ module.exports = {
 				},
 				{
 					type: 'number',
+					asInteger: true,
 					label: 'Brightness',
 					id: 'brightness',
 					default: 3,
@@ -794,41 +726,15 @@ module.exports = {
 
 				let sequence = null
 
-				let optScreen = await self.parseVariablesInString(opt.screen)
-				let screen = parseInt(optScreen)
-
-				if (isNaN(screen)) {
-					self.log('error', `Screen is not a number: ${optScreen}`)
-					return
-				}
-
-				let optAddress = await self.parseVariablesInString(opt.address)
-				let address = parseInt(optAddress)
-
-				if (isNaN(address)) {
-					self.log('error', `Address is not a number: ${optAddress}`)
-					return
-				}
-
-				let optBrightness = await self.parseVariablesInString(opt.brightness)
-				let brightness = parseInt(optBrightness)
-
-				if (isNaN(brightness)) {
-					self.log('error', `Brightness is not a number: ${optBrightness}`)
-					return
-				}
-
-				let message = await self.parseVariablesInString(opt.message)
-
 				let tally = {
-					screen: screen,
-					index: address,
+					screen: opt.screen,
+					index: opt.address,
 					display: {
 						rh_tally: self.colorToBits(opt.rh_tally),
 						text_tally: self.colorToBits(opt.text_tally),
 						lh_tally: self.colorToBits(opt.lh_tally),
-						brightness: brightness,
-						text: message,
+						brightness: opt.brightness,
+						text: opt.message,
 					},
 				}
 
