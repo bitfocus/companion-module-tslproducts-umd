@@ -846,11 +846,7 @@ module.exports = {
 			name: 'Stop repeating last sent packet',
 			options: [],
 			callback: async function () {
-				if (self.repeatInterval !== null) {
-					self.log('info', 'Stopping repeated sending of last packet')
-					clearInterval(self.repeatInterval)
-					self.repeatInterval = null
-				}
+				if (self.clearRepeatInterval()) self.log('info', 'Stopping repeated sending of last packet')
 			},
 		}
 
