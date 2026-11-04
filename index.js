@@ -26,16 +26,12 @@ class tslumdInstance extends InstanceBase {
 	}
 
 	async destroy() {
-		let self = this
-
-		if (self.udp !== undefined) {
-			self.udp.destroy()
+		if (this.udp !== undefined) {
+			this.udp.destroy()
+			this.udp = undefined
 		}
 
-		if (self.repeatInterval !== null) {
-			clearInterval(self.repeatInterval)
-			self.repeatInterval = null
-		}
+		this.clearRepeatInterval()
 	}
 
 	async init(config) {
@@ -44,6 +40,14 @@ class tslumdInstance extends InstanceBase {
 
 	async configUpdated(config) {
 		this.config = config
+
+		// Clear any existing repeat interval and UDP connection before reinitializing
+		this.clearRepeatInterval()
+
+		if (this.udp !== undefined) {
+			this.udp.destroy()
+			this.udp = undefined
+		}
 
 		this.initActions()
 		this.initVariables()
